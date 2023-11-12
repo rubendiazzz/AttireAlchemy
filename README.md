@@ -1,5 +1,3 @@
-Sure, here is a README.md file with HTML and Markdown for GitHub:
-
 ```markdown
 # Outfit Picker App
 
@@ -11,7 +9,6 @@ The Outfit Picker App is an AI-powered application that generates outfits based 
 
 Below is a flowchart illustrating the main steps involved in the outfit generation process:
 
-```
 [Start] --> [Upload clothing pictures] --> [Analyze clothing attributes] --> [Store clothing data] --> [Get user preferences] --> [Apply AI outfit matching algorithm] --> [Generate outfit] --> [Display outfit] --> [End]
 
 
@@ -48,3 +45,4 @@ The documentation for the Outfit Picker App will cover the following sections:
 
 With this documentation, you will have a comprehensive guide to develop the Outfit Picker App, enabling you to create an AI-powered outfit generation system tailored to individual user preferences.
 
+```
