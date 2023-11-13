@@ -1,4 +1,4 @@
-# ai-outfit-creator
+# Attire Alchemy
 
 ## Overview
 
