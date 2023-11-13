@@ -84,7 +84,7 @@ class _OutfitGeneratorScreenState extends State<OutfitGeneratorScreen> {
         // You might also provide a button to retry the permission request.
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
+            content: const Text(
                 'Please grant access to the photo library for image selection.'),
             action: SnackBarAction(
               label: 'Retry',
