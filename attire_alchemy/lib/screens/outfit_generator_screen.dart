@@ -19,21 +19,25 @@ class _OutfitGeneratorScreenState extends State<OutfitGeneratorScreen> {
   final List<File> _images = [];
 
   Future<void> _uploadImages(String userName) async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final userDirectory = Directory('${directory.path}/$userName');
-      if (!await userDirectory.exists()) {
-        await userDirectory.create();
-      }
-      for (final image in _images) {
-        final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-        final file = File('${userDirectory.path}/$fileName');
-        await file.writeAsBytes(await image.readAsBytes());
-        // Save file path to the database
-        await _saveFilePathToDatabase(file.path);
-      }
-    } catch (e) {
-      print('Error uploading images: $e');
+    final directory = await getApplicationDocumentsDirectory();
+    final appDirectory =
+        Directory('${directory.path}/attire_alchemy'); // App-specific directory
+    if (!await appDirectory.exists()) {
+      await appDirectory.create();
+    }
+
+    final userDirectory = Directory('${appDirectory.path}/$userName');
+    if (!await userDirectory.exists()) {
+      await userDirectory.create();
+    }
+
+    for (final image in _images) {
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final file = File('${userDirectory.path}/$fileName');
+      await file.writeAsBytes(await image.readAsBytes());
+
+      // Save file path to the database
+      await _saveFilePathToDatabase(file.path);
     }
   }
 
@@ -54,6 +58,8 @@ class _OutfitGeneratorScreenState extends State<OutfitGeneratorScreen> {
     }
   }
 
+  // Removed unused variable
+
   Future<void> _pickImage() async {
     final status = await Permission.photos.request();
 
@@ -69,46 +75,62 @@ class _OutfitGeneratorScreenState extends State<OutfitGeneratorScreen> {
         print('Error picking image: $e');
       }
     } else {
-      // Handle permission denied
+      // Handle permission denied or permanently denied
+      if (status.isPermanentlyDenied) {
+        // The user permanently denied the permission. You can prompt them to enable it in app settings.
+        await openAppSettings();
+      } else {
+        // The user denied the permission without choosing "Don't ask again." You can inform them about the importance of the permission.
+        // You might also provide a button to retry the permission request.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Please grant access to the photo library for image selection.'),
+            action: SnackBarAction(
+              label: 'Retry',
+              onPressed: () {
+                _pickImage(); // Retry the permission request.
+              },
+            ),
+          ),
+        );
+      }
     }
   }
 
   Future<void> _showUserNameDialog() async {
-    try {
-      final userNameController = TextEditingController();
-      await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Enter your username'),
-            content: TextField(
-              controller: userNameController,
-              decoration: const InputDecoration(hintText: 'Username'),
+    final userNameController = TextEditingController();
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Enter your username'),
+          content: TextField(
+            controller: userNameController,
+            decoration: const InputDecoration(hintText: 'Username'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
+            TextButton(
+              onPressed: () {
+                final userName = userNameController.text.trim();
+                if (userName.isNotEmpty) {
+                  _uploadImages(userName); // This uploads images
+                  _pickImage(); // This opens the image picker
                   Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  final userName = userNameController.text.trim();
-                  if (userName.isNotEmpty) {
-                    _uploadImages(userName);
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text('Save'),
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      print('Error showing username dialog: $e');
-    }
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
