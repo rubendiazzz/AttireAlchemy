@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:attire_alchemy/screens/home_screen.dart';
+import 'package:attire_alchemy/screens/outfit_generator_screen.dart';
 
 void main() {
   runApp(const AttireAlchemy());
@@ -10,27 +12,16 @@ class AttireAlchemy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'AttireAlchemy',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: const Center(
-        child: Text('Welcome to AttireAlchemy!'),
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/outfit-generator': (context) => const OutfitGeneratorScreen(),
+      },
     );
   }
 }
