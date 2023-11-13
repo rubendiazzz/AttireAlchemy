@@ -1,10 +1,10 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 class OutfitGeneratorScreen extends StatefulWidget {
   const OutfitGeneratorScreen({Key? key}) : super(key: key);
@@ -27,8 +27,21 @@ class _OutfitGeneratorScreenState extends State<OutfitGeneratorScreen> {
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
       final file = File('${userDirectory.path}/$fileName');
       await file.writeAsBytes(await image.readAsBytes());
-      // TODO: Save file path to database
+      // Save file path to the database
+      await _saveFilePathToDatabase(file.path);
     }
+  }
+
+  Future<void> _saveFilePathToDatabase(String filePath) async {
+    final database = await openDatabase('my_database.db', version: 1,
+        onCreate: (Database db, int version) async {
+      await db.execute(
+          'CREATE TABLE images (id INTEGER PRIMARY KEY, file_path TEXT)');
+    });
+
+    await database.transaction((txn) async {
+      await txn.rawInsert('INSERT INTO images(file_path) VALUES("$filePath")');
+    });
   }
 
   Future<void> _pickImage() async {
