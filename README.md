@@ -41,5 +41,3 @@ The documentation for the Outfit Picker App will cover the following sections:
     - Ideas for further development
 8. Troubleshooting
     - Common issues and solutions
-9. References
-    - List of resources and references used
